@@ -68,7 +68,6 @@ jmx_queries = [
               ]
 
 
-client = JMX.connect(:port => 3000)
 
 def get_jmx_objs(name, client)
   client.query_names(name).entries
@@ -84,6 +83,8 @@ def get_jmx_attributes(jmx_obj, attr, client)
 end
 
 
+client = JMX.connect(:port => 3000)
+
 jmx_queries.each do |q|
   get_jmx_objs(q[:name],client).each do |jmx_obj|
     q[:attrs].each do |attr|
@@ -94,6 +95,7 @@ jmx_queries.each do |q|
     end
   end
 end
+
 
 
 
