@@ -1,6 +1,7 @@
 require 'choice'
 require 'jmx'
 require 'pry'
+require 'socket'
 
 jmx_queries = [
                {
@@ -82,22 +83,45 @@ def get_jmx_attributes(jmx_obj, attr, client)
   end
 end
 
+def carbon_str(vals)
+  updates = []
+  now = Time.now.to_i
+  vals.each do |k,v|
+    updates << ["stats.test-jmx.#{k}", v, now].join(" ")
+  end
+  return updates.join("\n") + "\n"
+end
 
 client = JMX.connect(:port => 3000)
+
+metrics = []
 
 jmx_queries.each do |q|
   get_jmx_objs(q[:name],client).each do |jmx_obj|
     q[:attrs].each do |attr|
       jmx_vals = get_jmx_attributes(jmx_obj, attr, client)
       jmx_vals.each do |k,v|
-        puts "#{q[:alias]}-#{attr}-#{k}-#{v.to_s}"
+         metrics << ["#{q[:alias]}.#{attr}.#{k}", v.to_s]
       end
     end
   end
 end
 
 
+# puts carbon_str(metrics)
 
+# return 0
+
+host = "logserver"
+socket = TCPSocket.new(host, 2003)
+
+begin
+  socket.write(carbon_str(metrics))
+rescue => e
+  socket.close rescue nil
+  socket = nil
+  raise
+end
 
 
 
