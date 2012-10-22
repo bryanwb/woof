@@ -1,8 +1,29 @@
 require 'choice'
 require 'jmx'
-require 'pry'
 require 'socket'
 
+Choice.options do
+  option :output do
+    short '-o'
+    long '--output=tcp'
+    desc 'Destination for collected metrics'
+    default 'tcp'
+    valid ['stdout', 'tcp']
+  end
+
+  option :verbose do
+    short '-v'
+    long '--verbose'
+    desc 'Verbose logging'
+  end
+
+  option :config do
+    short '-c'
+    long '--config'
+    default File.join(File.dirname(__FILE__),'../etc/config.json')
+  end
+end
+    
 jmx_queries = [
                {
                  :alias => "ajp-thread-pool",
@@ -67,7 +88,6 @@ jmx_queries = [
                  :attrs => [ "NumActive", "NumIdle", "NumQueryThreads" ]
                }
               ]
-
 
 
 def get_jmx_objs(name, client)

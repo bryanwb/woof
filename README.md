@@ -1,6 +1,8 @@
 Description
 ===========
 
+This project has been abandoned in favor of [collectd's GenericJMX plugin](https://collectd.org/wiki/index.php/Plugin:GenericJMX)
+
 Woof is a library and daemon to poll JVMs for JMX data. It will also
 support polling JBOSS 7's HTTP-JSON management interface.
 
